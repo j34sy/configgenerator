@@ -32,7 +32,7 @@ type OSPF struct {
 	Area    int `yaml:"area"`
 }
 
-type Route struct {
+type Routes struct {
 	Destinations []string `yaml:"destinations,omitempty"`
 	Default      string   `yaml:"default,omitempty"`
 }
@@ -45,7 +45,7 @@ type OSPFRouter struct {
 type Router struct {
 	Name       string       `yaml:"name"`
 	Interfaces []Interface  `yaml:"interfaces,omitempty"`
-	Routes     []Route      `yaml:"routes,omitempty"`
+	Routes     Routes       `yaml:"routes,omitempty"`
 	OSPFRouter []OSPFRouter `yaml:"ospf,omitempty"`
 }
 
@@ -55,9 +55,11 @@ type Switch struct {
 }
 
 type MLSwitch struct {
-	Name       string      `yaml:"name"`
-	Routing    bool        `yaml:"routing,omitempty"`
-	Interfaces []Interface `yaml:"interfaces,omitempty"`
+	Name       string       `yaml:"name"`
+	Routing    bool         `yaml:"routing,omitempty"`
+	Interfaces []Interface  `yaml:"interfaces,omitempty"`
+	Routes     Routes       `yaml:"routes,omitempty"`
+	OSPFRouter []OSPFRouter `yaml:"ospf,omitempty"`
 }
 
 type Network struct {

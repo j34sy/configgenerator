@@ -63,23 +63,9 @@ func PrintFullNetworkInfo(network *Network) error {
 	fmt.Println("Switches:")
 	for _, switchDev := range network.Switches {
 		fmt.Println("Switch: " + switchDev.Name)
-		fmt.Println("Interfaces:")
-		for _, iface := range switchDev.Interfaces {
-			fmt.Println("Name: " + iface.Name)
-			fmt.Println("Vlan: " + iface.Vlan)
-			fmt.Println("IP: " + iface.IP)
-			fmt.Println("Trunk: ")
-			for _, trunk := range iface.Trunk {
-				fmt.Println(trunk)
-			}
-			fmt.Println("Access: ", iface.Access)
-			fmt.Println("OSPF:")
-			if iface.OSPF != nil {
-				fmt.Println("Process: ", iface.OSPF.Process)
-				fmt.Println("Area: ", iface.OSPF.Area)
-			}
-			fmt.Println()
-		}
+
+		PrintInterfaces(switchDev.Interfaces)
+
 		fmt.Println("---")
 	}
 
@@ -90,23 +76,13 @@ func PrintFullNetworkInfo(network *Network) error {
 	for _, mlswitch := range network.MLSwitches {
 		fmt.Println("Switch: " + mlswitch.Name)
 		fmt.Println("Routing: ", mlswitch.Routing)
-		fmt.Println("Interfaces:")
-		for _, iface := range mlswitch.Interfaces {
-			fmt.Println("Name: " + iface.Name)
-			fmt.Println("Vlan: " + iface.Vlan)
-			fmt.Println("IP: " + iface.IP)
-			fmt.Println("Trunk: ")
-			for _, trunk := range iface.Trunk {
-				fmt.Println(trunk)
-			}
-			fmt.Println("Access: ", iface.Access)
-			fmt.Println("OSPF:")
-			if iface.OSPF != nil {
-				fmt.Println("Process: ", iface.OSPF.Process)
-				fmt.Println("Area: ", iface.OSPF.Area)
-			}
-			fmt.Println()
-		}
+
+		PrintInterfaces(mlswitch.Interfaces)
+
+		PrintRoutes(mlswitch.Routes)
+
+		PrintOSPFRouter(mlswitch.OSPFRouter)
+
 		fmt.Println("---")
 	}
 
@@ -116,42 +92,56 @@ func PrintFullNetworkInfo(network *Network) error {
 	fmt.Println("Routers:")
 	for _, router := range network.Routers {
 		fmt.Println("Router: " + router.Name)
-		fmt.Println("OSPF settings:")
-		for _, ospf := range router.OSPFRouter {
-			fmt.Println("Process: ", ospf.Process)
-			fmt.Println("ID: " + ospf.ID)
-			fmt.Println()
-		}
-		fmt.Println("Interfaces:")
-		for _, iface := range router.Interfaces {
-			fmt.Println("Name: " + iface.Name)
-			fmt.Println("Vlan: " + iface.Vlan)
-			fmt.Println("IP: " + iface.IP)
-			fmt.Println("Trunk: ")
-			for _, trunk := range iface.Trunk {
-				fmt.Println(trunk)
-			}
-			fmt.Println("Access: ", iface.Access)
-			fmt.Println("OSPF:")
-			if iface.OSPF != nil {
-				fmt.Println("Process: ", iface.OSPF.Process)
-				fmt.Println("Area: ", iface.OSPF.Area)
-			}
-			fmt.Println()
-		}
-		fmt.Println("Routes:")
-		for _, route := range router.Routes {
-			fmt.Println("Destinations:")
-			for _, dest := range route.Destinations {
-				fmt.Println(dest)
-			}
-			fmt.Println("Default: " + route.Default)
-			fmt.Println()
-		}
+
+		PrintOSPFRouter(router.OSPFRouter)
+
+		PrintInterfaces(router.Interfaces)
+
+		PrintRoutes(router.Routes)
+
 		fmt.Println("---")
 	}
 
 	fmt.Println("This should be all ...")
 
 	return nil
+}
+
+func PrintRoutes(routes Routes) {
+	fmt.Println("Routes:")
+	fmt.Println("Destinations:")
+	for _, dest := range routes.Destinations {
+		fmt.Println(dest)
+	}
+	fmt.Println("Default: " + routes.Default)
+	fmt.Println()
+}
+
+func PrintInterfaces(interfaces []Interface) {
+	fmt.Println("Interfaces:")
+	for _, iface := range interfaces {
+		fmt.Println("Name: " + iface.Name)
+		fmt.Println("Vlan: " + iface.Vlan)
+		fmt.Println("IP: " + iface.IP)
+		fmt.Println("Trunk: ")
+		for _, trunk := range iface.Trunk {
+			fmt.Println(trunk)
+		}
+		fmt.Println("Access: ", iface.Access)
+		fmt.Println("OSPF:")
+		if iface.OSPF != nil {
+			fmt.Println("Process: ", iface.OSPF.Process)
+			fmt.Println("Area: ", iface.OSPF.Area)
+		}
+		fmt.Println()
+	}
+}
+
+func PrintOSPFRouter(ospfRouter []OSPFRouter) {
+	fmt.Println("OSPF Routers:")
+	for _, router := range ospfRouter {
+		fmt.Println("Process: ", router.Process)
+		fmt.Println("ID: " + router.ID)
+		fmt.Println()
+	}
 }
