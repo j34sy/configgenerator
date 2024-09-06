@@ -1,0 +1,115 @@
+---
+- name: mynetwork.internal
+  users:
+    - name: admin
+      password: admin123
+      privilege: 15
+  vlans:
+    - switches:
+        - accessswitch
+      list:
+      - name: myvlan
+        id: 101
+        subnet: 192.168.101.0/24
+        gateway: 192.168.101.1
+      - name: myvlan2
+        id: 102
+        subnet: 192.168.102.0/24
+        gateway: 192.168.102.1
+    - switches:
+        - mymlswitch
+        - myswitch1
+        - myswitch2
+      list:
+        - name: vlan10
+          id: 10
+          subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
+        - name: vlan20
+          id: 20
+          subnet: 192.168.20.0/24
+          gateway: 192.168.20.1
+  routers:
+    - name: myrouter
+      interfaces:
+        - name: gigabitethernet0/0/0
+          vlan: 101
+          ip: 192.168.101.1/24
+        - name: gigabitethernet0/0/0
+          vlan: 102
+          ip: 192.168.102.1/24
+        - name: gigabitethernet0/0/1
+          ip: 10.10.1.2/30
+      routes:
+        - destinations:
+        - default: 10.10.1.1
+    - name: myrouter2
+      ospf:
+        - process: 1
+          id: 99.99.99.99
+      interfaces:
+        - name: gigabitethernet0/0/0
+          ip: 10.0.1.1/24
+          ospf:
+            process: 1
+            area: 0
+        - name: gigabitethernet0/0/1
+          ip: 10.10.2.2/30
+      routes:
+        - destinations:
+        - default: 10.10.2.1
+    - name: internet
+      interfaces:
+        - name: gigabitethernet0/0/0
+          ip: 10.10.1.1/30
+        - name: gigabitethernet0/0/1
+          ip: 10.10.2.1/30
+      routes:
+        - destinations:
+          - 192.168.101.0/24
+          - 192.168.102.0/24
+          - 192.168.10.0/24
+          - 192.168.20.0/24
+  switches:
+    - name: myswitch1
+      interfaces:
+        - name: gigabitethernet0/1
+          vlan: trunk
+          trunk:
+            - 10
+            - 20
+        - name: fastethernet0/1
+          vlan: access
+          access: 10
+    - name: myswitch2
+      interfaces:
+        - name: gigabitethernet0/1
+          vlan: trunk
+          trunk:
+            - 10
+            - 20
+        - name: fastethernet0/1
+          vlan: access
+          access: 20
+        - vlan: 10
+          ip: 192.168.10.254
+  mlswitches:
+    - name: mymlswitch
+      routing: true
+      interfaces:
+        - name: gigabitethernet1/0/1
+          ip: 10.0.1.254/24
+        - name: gigabitethernet1/0/23
+          vlan: trunk
+          trunk:
+            - 10
+            - 20
+        - name: gigabitethernet1/0/24
+          vlan: trunk
+          trunk:
+            - 10
+            - 20
+        - name: vlan10
+          ip: 192.168.10.1
+        - name: vlan20
+          ip: 192.168.20.1
