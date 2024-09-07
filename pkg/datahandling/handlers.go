@@ -53,6 +53,29 @@ func GetIPv4Address(ipv4String string) (*subnetcalc.IPv4Address, error) {
 			return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12; octet must be between 0 and 255"}
 		}
 	}
+	rawIP := subnetcalc.NewIPv4Address(ip, cidr)
+	rawIP.Calculate()
+	return rawIP, nil
+}
 
-	return subnetcalc.NewIPv4Address(ip, cidr), nil
+func IsSameNetwork(ipv4AString string, ipv4BString string) (bool, error) {
+	ipv4A, err := GetIPv4Address(ipv4AString)
+	if err != nil {
+		return false, err
+	}
+
+	ipv4B, err := GetIPv4Address(ipv4BString)
+	if err != nil {
+		return false, err
+	}
+
+	result := false
+
+	if ipv4A.GetNetworkAddress() == ipv4B.GetNetworkAddress() {
+		if ipv4A.GetBroadcastAddress() == ipv4B.GetBroadcastAddress() {
+			result = true
+		}
+	}
+
+	return result, nil
 }

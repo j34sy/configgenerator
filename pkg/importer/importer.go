@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func Load(filePath string) (*[]NetworkYAML, error) {
+func LoadYAML(filePath string) (*[]NetworkYAML, error) {
 	// get data from provided file
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -26,7 +26,7 @@ func Load(filePath string) (*[]NetworkYAML, error) {
 	return &networks, nil
 }
 
-func PrintFullNetworkInfo(network *NetworkYAML) error {
+func PrintFullNetworkInfoByYAML(network *NetworkYAML) error {
 	fmt.Println("Network info for network: " + network.Name)
 
 	fmt.Println()
@@ -127,6 +127,7 @@ func PrintInterfaces(interfaces []InterfaceYAML) {
 		for _, trunk := range iface.Trunk {
 			fmt.Println(trunk)
 		}
+		fmt.Println("Native: ", iface.Native)
 		fmt.Println("Access: ", iface.Access)
 		fmt.Println("OSPF:")
 		if iface.OSPF != nil {
