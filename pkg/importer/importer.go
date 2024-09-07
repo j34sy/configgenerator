@@ -7,14 +7,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func Load(filePath string) (*[]Network, error) {
+func Load(filePath string) (*[]NetworkYAML, error) {
 	// get data from provided file
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	var networks []Network
+	var networks []NetworkYAML
 
 	err = yaml.Unmarshal(content, &networks)
 
@@ -26,7 +26,7 @@ func Load(filePath string) (*[]Network, error) {
 	return &networks, nil
 }
 
-func PrintFullNetworkInfo(network *Network) error {
+func PrintFullNetworkInfo(network *NetworkYAML) error {
 	fmt.Println("Network info for network: " + network.Name)
 
 	fmt.Println()
@@ -107,7 +107,7 @@ func PrintFullNetworkInfo(network *Network) error {
 	return nil
 }
 
-func PrintRoutes(routes Routes) {
+func PrintRoutes(routes RoutesYAML) {
 	fmt.Println("Routes:")
 	fmt.Println("Destinations:")
 	for _, dest := range routes.Destinations {
@@ -117,7 +117,7 @@ func PrintRoutes(routes Routes) {
 	fmt.Println()
 }
 
-func PrintInterfaces(interfaces []Interface) {
+func PrintInterfaces(interfaces []InterfaceYAML) {
 	fmt.Println("Interfaces:")
 	for _, iface := range interfaces {
 		fmt.Println("Name: " + iface.Name)
@@ -137,7 +137,7 @@ func PrintInterfaces(interfaces []Interface) {
 	}
 }
 
-func PrintOSPFRouter(ospfRouter []OSPFRouter) {
+func PrintOSPFRouter(ospfRouter []OSPFRouterYAML) {
 	fmt.Println("OSPF Routers:")
 	for _, router := range ospfRouter {
 		fmt.Println("Process: ", router.Process)
