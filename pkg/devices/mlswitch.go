@@ -6,11 +6,15 @@ import (
 
 func CreateMLSwitch(mlSwitchYAML importer.MLSwitchYAML) *MLSwitch {
 	return &MLSwitch{
-		Name:        mlSwitchYAML.Name,
-		Interfaces:  []Interface{},
-		Routes:      []Route{},
+		RoutingDevice: RoutingDevice{
+			mlSwitchYAML.Name,
+			[]Interface{},
+			mlSwitchYAML.Routes.Destinations,
+			mlSwitchYAML.Routes.Default,
+		},
 		OSPFRouters: []OSPFRouter{},
 		Routing:     mlSwitchYAML.Routing,
 		Users:       []User{},
+		Routes:      []Route{},
 	}
 }
