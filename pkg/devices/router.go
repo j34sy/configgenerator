@@ -3,7 +3,6 @@ package devices
 import (
 	"fmt"
 
-	"github.com/j34sy/configgenerator/pkg/datahandling"
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
 
@@ -57,6 +56,8 @@ func CreateRouter(routerYAML importer.RouterYAML, usersYAML []importer.UserYAML,
 		Domain:      domain,
 	}
 }
+
+/*
 
 // Function to get the direct neighbors of each router
 func GetDirectNeighbors(router importer.RouterYAML, fullNetwork *[]importer.NetworkYAML) map[string]string {
@@ -152,3 +153,4 @@ func getRouterByName(name string, fullNetwork *[]importer.NetworkYAML) importer.
 	}
 	return importer.RouterYAML{}
 }
+*/
