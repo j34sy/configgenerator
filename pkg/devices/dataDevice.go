@@ -1,13 +1,18 @@
 package devices
 
+type RoutingDevice struct {
+	Name         string
+	Interfaces   []Interface
+	Destinations []string
+	Default      string
+}
+
 type Router struct {
-	Name        string
+	RoutingDevice
 	Domain      string
-	Interfaces  []Interface
-	Routes      []Route
 	OSPFRouters []OSPFRouter
 	Users       []User
-	Default     string
+	Routes      []Route
 }
 
 type Switch struct {
@@ -20,15 +25,13 @@ type Switch struct {
 }
 
 type MLSwitch struct {
-	Name        string
+	RoutingDevice
 	Domain      string
-	Interfaces  []Interface
 	Vlans       []Vlan
-	Routes      []Route
 	OSPFRouters []OSPFRouter
 	Routing     bool
 	Users       []User
-	Default     string
+	Routes      []Route
 }
 
 type User struct {
