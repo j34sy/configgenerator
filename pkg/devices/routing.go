@@ -7,7 +7,6 @@ import (
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
 
-// Function to get the direct neighbors of each router and MLSwitch
 // Function to get the direct neighbors of each routing device
 func GetDirectNeighbors(routing RoutingDevice, fullNetwork []RoutingDevice) map[string]string {
 	neighbors := make(map[string]string)
@@ -25,6 +24,7 @@ func GetDirectNeighbors(routing RoutingDevice, fullNetwork []RoutingDevice) map[
 				}
 				if check {
 					neighbors[device.Name] = iface.IP
+					fmt.Println("Found neighbor", device.Name, "for", routing.Name)
 				}
 			}
 		}
@@ -53,11 +53,36 @@ func FindNextHop(dest string, routing RoutingDevice, fullNetwork *[]importer.Net
 			routingDevices = append(routingDevices, RoutingDevice{mlswitch.Name, ifaces, mlswitch.Routes.Destinations, mlswitch.Routes.Default})
 		}
 	}
-	return findNextHopRecursive(dest, routing, routingDevices, visited)
+	for _, device := range routingDevices {
+		visited[device.Name] = false
+	}
+	success := false
+	var nextHop string
+
+	for !success {
+		nextHop, success, visited = findNextHopRecursive(dest, routing, routingDevices, visited, false)
+		fmt.Println("Next hop for ", dest, " is ", nextHop, " success: ", success)
+		if success {
+			return nextHop
+		}
+		success = true
+		for _, device := range routingDevices {
+			if !visited[device.Name] {
+				success = false
+				continue
+			} else {
+				continue
+			}
+
+		}
+
+	}
+
+	return nextHop
 }
 
 // Recursive function to find the next hop for routing devices
-func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []RoutingDevice, visited map[string]bool) string {
+func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []RoutingDevice, visited map[string]bool, remember bool) (string, bool, map[string]bool) {
 	// Mark the current routing device as visited
 	visited[routing.Name] = true
 
@@ -70,10 +95,11 @@ func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []Rout
 			check, err := datahandling.IsSameNetwork(iface.IP, dest)
 			if err != nil {
 				fmt.Println(err)
-				return routing.Default
+				return routing.Default, remember, visited
 			}
 			if check {
-				return neighborIP
+				fmt.Println("Found direct route to", dest, "via", neighborName)
+				return neighborIP, true, visited
 			}
 		}
 	}
@@ -82,14 +108,17 @@ func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []Rout
 	for neighborName, neighborIP := range neighbors {
 		if !visited[neighborName] {
 			neighborDevice := getRoutingDeviceByName(neighborName, fullNetwork)
-			nextHop := findNextHopRecursive(dest, neighborDevice, fullNetwork, visited)
+
+			nextHop, remember, _ := findNextHopRecursive(dest, neighborDevice, fullNetwork, visited, remember)
+
 			if nextHop != routing.Default {
-				return neighborIP
+				fmt.Println("Found next hop", nextHop, "for", dest, "via", neighborName)
+				return neighborIP, remember, visited
 			}
 		}
 	}
-
-	return routing.Default
+	fmt.Println("No route found for", dest, " visited:", visited)
+	return routing.Default, false, visited
 }
 
 // Helper function to get the routing device by its name
@@ -99,5 +128,6 @@ func getRoutingDeviceByName(name string, devices []RoutingDevice) RoutingDevice 
 			return device
 		}
 	}
+	fmt.Println("Device not found")
 	return RoutingDevice{}
 }
