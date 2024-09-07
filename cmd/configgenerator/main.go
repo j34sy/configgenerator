@@ -124,12 +124,12 @@ func main() {
 
 	dest := "10.0.0.0/8"
 	nextHop := devices.FindNextHop(dest, devices.RoutingDevice{
-		Name: "MLSwitch2",
+		Name: "Router3",
 		Interfaces: []devices.Interface{
-			{Name: "eth0", IP: "192.168.5.2/24"},
-			{Name: "eth1", IP: "172.16.0.0/24"},
+			{Name: "eth0", IP: "192.168.2.2/24"},
+			{Name: "eth1", IP: "192.168.3.1/24"},
 		},
-		Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24"},
+		Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/16"},
 		Default:      "",
 	}, &fullNetwork)
 	fmt.Println("Next Hop:", nextHop)

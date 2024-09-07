@@ -43,7 +43,7 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 
 	for _, iface := range interfaces {
 		for _, vlan := range switchVlans {
-			if iface.Vlan == string(vlan.ID) {
+			if iface.Vlan == fmt.Sprint(vlan.ID) {
 				fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", switchYAML.Name)
 				if iface.IP != "" {
 					fmt.Println("Found IP info in interface: ", iface.Name, " device: ", switchYAML.Name)
