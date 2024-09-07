@@ -25,6 +25,7 @@ type InterfaceYAML struct {
 	Trunk  []int     `yaml:"trunk,omitempty"`
 	Access int       `yaml:"access,omitempty"`
 	OSPF   *OSPFYAML `yaml:"ospf,omitempty"`
+	Native int       `yaml:"native,omitempty"`
 }
 
 type OSPFYAML struct {

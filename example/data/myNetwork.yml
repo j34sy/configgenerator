@@ -35,9 +35,11 @@
         - name: gigabitethernet0/0/0
           vlan: 101
           ip: 192.168.101.1/24
+          native: 1
         - name: gigabitethernet0/0/0
           vlan: 102
           ip: 192.168.102.1/24
+          native: 1
         - name: gigabitethernet0/0/1
           ip: 10.10.1.2/30
       routes:
@@ -77,9 +79,11 @@
           trunk:
             - 10
             - 20
+          native: 1
         - name: fastethernet0/1
           vlan: access
           access: 10
+          native: 1
     - name: myswitch2
       interfaces:
         - name: gigabitethernet0/1
@@ -87,6 +91,7 @@
           trunk:
             - 10
             - 20
+          native: 1
         - name: fastethernet0/1
           vlan: access
           access: 20
@@ -106,11 +111,13 @@
           trunk:
             - 10
             - 20
+          native: 1
         - name: gigabitethernet1/0/24
           vlan: trunk
           trunk:
             - 10
             - 20
+          native: 1
         - name: vlan10
           ip: 192.168.10.1
           ospf:
