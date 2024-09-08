@@ -7,7 +7,90 @@ import (
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
 
-// Function to get the direct neighbors of each routing device
+func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.NetworkYAML) string {
+	visited := make(map[string]bool)
+
+	for _, iface := range routingDev.Interfaces {
+		match, err := datahandling.IsSameNetwork(dest, iface.IP)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		if match {
+			return iface.IP
+		}
+	}
+
+	devices := []RoutingDevice{}
+
+	for _, network := range *fullNetwork {
+		for _, router := range network.Routers {
+			devices = append(devices, RoutingDevice{Name: router.Name, Interfaces: convertYAMLInterfaceToInterface(router.Interfaces), Destinations: router.Routes.Destinations, Default: router.Routes.Default})
+		}
+		for _, mls := range network.MLSwitches {
+			devices = append(devices, RoutingDevice{Name: mls.Name, Interfaces: convertYAMLInterfaceToInterface(mls.Interfaces), Destinations: mls.Routes.Destinations, Default: mls.Routes.Default})
+		}
+	}
+
+	for _, device := range devices {
+		visited[device.Name] = false
+		if device.Name == routingDev.Name {
+			visited[device.Name] = true
+		}
+	}
+
+	for neighbor, ip := range GetDirectNeighbors(routingDev, devices) {
+		nextHop, found, visited := findNextHopRecursive(dest, routingDev, devices, visited)
+
+		if found {
+			fmt.Println("Found next hop: ", nextHop, " for ", dest, " should be ", ip, " on ", neighbor)
+			return nextHop
+		} else {
+			fmt.Println("Could not find next hop")
+			fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
+		}
+	}
+
+	return ""
+}
+
+func findNextHopRecursive(dest string, routingDev RoutingDevice, devices []RoutingDevice, visited map[string]bool) (string, bool, map[string]bool) {
+	fmt.Println("Visiting device: ", routingDev.Name)
+
+	for _, iface := range routingDev.Interfaces {
+		match, err := datahandling.IsSameNetwork(dest, iface.IP)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		if match {
+			fmt.Println("Match found on interface: ", iface.IP)
+			return iface.IP, true, visited
+		}
+	}
+
+	neighbors := GetDirectNeighbors(routingDev, devices)
+
+	for neighbor, ip := range neighbors {
+		if visited[neighbor] {
+			fmt.Println("Already visited: ", neighbor)
+			continue
+		}
+		visited[neighbor] = true
+
+		neighborDev := getRoutingDeviceByName(neighbor, devices)
+
+		_, found, visited := findNextHopRecursive(dest, neighborDev, devices, visited)
+
+		if found {
+			fmt.Println("Next hop found via neighbor: ", neighbor, " with IP: ", ip)
+			return ip, true, visited
+		}
+	}
+
+	return "", false, visited
+}
+
 func GetDirectNeighbors(routing RoutingDevice, fullNetwork []RoutingDevice) map[string]string {
 	neighbors := make(map[string]string)
 
@@ -32,95 +115,6 @@ func GetDirectNeighbors(routing RoutingDevice, fullNetwork []RoutingDevice) map[
 	return neighbors
 }
 
-// Function to find the next hop recursively
-func FindNextHop(dest string, routing RoutingDevice, fullNetwork *[]importer.NetworkYAML) string {
-	visited := make(map[string]bool)
-	routingDevices := []RoutingDevice{}
-	for _, network := range *fullNetwork {
-		for _, router := range network.Routers {
-			ifaces := []Interface{}
-			for _, iface := range router.Interfaces {
-				ifaces = append(ifaces, Interface{iface.Name, iface.Vlan, iface.IP, iface.Trunk, iface.Access, nil, iface.Native})
-			}
-			routingDevices = append(routingDevices, RoutingDevice{router.Name, ifaces, router.Routes.Destinations, router.Routes.Default})
-		}
-		for _, mlswitch := range network.MLSwitches {
-			ifaces := []Interface{}
-			for _, iface := range mlswitch.Interfaces {
-				ifaces = append(ifaces, Interface{iface.Name, iface.Vlan, iface.IP, iface.Trunk, iface.Access, nil, iface.Native})
-			}
-			routingDevices = append(routingDevices, RoutingDevice{mlswitch.Name, ifaces, mlswitch.Routes.Destinations, mlswitch.Routes.Default})
-		}
-	}
-	for _, device := range routingDevices {
-		visited[device.Name] = false
-	}
-	success := false
-	var nextHop string
-
-	for !success {
-		nextHop, success, visited = findNextHopRecursive(dest, routing, routingDevices, visited, false)
-		if success {
-			return nextHop
-		}
-		success = true
-		for _, device := range routingDevices {
-			if !visited[device.Name] {
-				success = false
-				fmt.Println("Not all devices visited")
-				break
-			} else {
-				continue
-			}
-
-		}
-
-	}
-
-	return nextHop
-}
-
-// Recursive function to find the next hop for routing devices
-func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []RoutingDevice, visited map[string]bool, remember bool) (string, bool, map[string]bool) {
-	// Mark the current routing device as visited
-	visited[routing.Name] = true
-
-	neighbors := GetDirectNeighbors(routing, fullNetwork)
-
-	// Check direct neighbors first
-	for neighborName, neighborIP := range neighbors {
-		neighborDevice := getRoutingDeviceByName(neighborName, fullNetwork)
-		for _, iface := range neighborDevice.Interfaces {
-			check, err := datahandling.IsSameNetwork(iface.IP, dest)
-			if err != nil {
-				fmt.Println(err)
-				return routing.Default, remember, visited
-			}
-			if check {
-				fmt.Println("Found direct route to", dest, "via", neighborIP, " with success "+fmt.Sprint(remember), " and visited ", visited)
-				return neighborIP, true, visited
-			}
-		}
-	}
-
-	// If no direct route is found, check for multi-hop routes
-	for neighborName, neighborIP := range neighbors {
-		if !visited[neighborName] {
-			neighborDevice := getRoutingDeviceByName(neighborName, fullNetwork)
-
-			nextHop, remember, visited := findNextHopRecursive(dest, neighborDevice, fullNetwork, visited, remember)
-
-			if nextHop != routing.Default {
-				fmt.Println("Found multi-hop route to", dest, "via", neighborIP, " with success "+fmt.Sprint(remember), " and visited ", visited)
-				return neighborIP, remember, visited
-			}
-		}
-	}
-	fmt.Println("No route found to", dest, "via", routing.Default, " with success "+fmt.Sprint(remember), " and visited ", visited)
-	return routing.Default, false, visited
-}
-
-// Helper function to get the routing device by its name
 func getRoutingDeviceByName(name string, devices []RoutingDevice) RoutingDevice {
 	for _, device := range devices {
 		if device.Name == name {
@@ -128,4 +122,12 @@ func getRoutingDeviceByName(name string, devices []RoutingDevice) RoutingDevice 
 		}
 	}
 	return RoutingDevice{}
+}
+
+func convertYAMLInterfaceToInterface(yamlInterface []importer.InterfaceYAML) []Interface {
+	interfaces := []Interface{}
+	for _, iface := range yamlInterface {
+		interfaces = append(interfaces, Interface{Name: iface.Name, IP: iface.IP})
+	}
+	return interfaces
 }
