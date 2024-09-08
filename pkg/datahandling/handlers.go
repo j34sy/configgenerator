@@ -22,18 +22,18 @@ func GetIPv4Address(ipv4String string) (*subnetcalc.IPv4Address, error) {
 
 	slashSplit := strings.Split(ipv4String, "/")
 	if len(slashSplit) != 2 {
-		return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12"}
+		return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12, got: " + ipv4String}
 	}
 
 	ipSplit := strings.Split(slashSplit[0], ".")
 	if len(ipSplit) != 4 {
-		return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12"}
+		return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12, got: " + ipv4String}
 	}
 
 	cidrInt, err := strconv.Atoi(slashSplit[1])
 
 	if err != nil {
-		return nil, &ErrInvalidIPv4Address{Message: "Invalid CIDR format, needs to be 1.2.3.4/12"}
+		return nil, &ErrInvalidIPv4Address{Message: "Invalid CIDR format, needs to be 1.2.3.4/12, got: " + ipv4String}
 	}
 
 	if cidrInt > 0 && cidrInt < 33 {
@@ -45,7 +45,7 @@ func GetIPv4Address(ipv4String string) (*subnetcalc.IPv4Address, error) {
 	for i, octet := range ipSplit {
 		octetInt, err := strconv.Atoi(octet)
 		if err != nil {
-			return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12"}
+			return nil, &ErrInvalidIPv4Address{Message: "Invalid IPv4 address format, needs to be 1.2.3.4/12, got: " + ipv4String}
 		}
 		if octetInt >= 0 && octetInt <= 255 {
 			ip[i] = octetInt
