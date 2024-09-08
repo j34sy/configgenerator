@@ -16,7 +16,7 @@ func TestFindNextHop(t *testing.T) {
 					Name: "Router1",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.1.2",
-						Destinations: []string{"192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "172.16.0.0/24"},
+						Destinations: []string{"192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.1.1/24"},
@@ -27,7 +27,7 @@ func TestFindNextHop(t *testing.T) {
 					Name: "Router2",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.2.2",
-						Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.2.1/24"},
@@ -38,7 +38,7 @@ func TestFindNextHop(t *testing.T) {
 					Name: "Router3",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.3.2",
-						Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.3.1/24"},
@@ -49,7 +49,7 @@ func TestFindNextHop(t *testing.T) {
 					Name: "Router4",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.4.2",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.4.1/24"},
@@ -62,7 +62,7 @@ func TestFindNextHop(t *testing.T) {
 					Name: "MLSwitch1",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.5.1",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.4.2/24"},
@@ -73,11 +73,22 @@ func TestFindNextHop(t *testing.T) {
 					Name: "MLSwitch2",
 					Routes: importer.RoutesYAML{
 						Default:      "",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8"},
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.5.2/24"},
 						{Name: "eth1", IP: "172.16.0.0/24"},
+					},
+				},
+				{
+					Name: "MLSwitch3",
+					Routes: importer.RoutesYAML{
+						Default:      "192.168.4.2",
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+					},
+					Interfaces: []importer.InterfaceYAML{
+						{Name: "eth0", IP: "192.168.4.3/24"},
+						{Name: "eth1", IP: "192.168.100.0/24"},
 					},
 				},
 			},
@@ -95,7 +106,7 @@ func TestFindNextHop(t *testing.T) {
 				{Name: "eth0", IP: "192.168.2.1/24"},
 				{Name: "eth1", IP: "192.168.1.2/24"},
 			},
-			Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+			Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 			Default:      "192.168.2.2"}},
 		{"192.168.5.0/24", "192.168.3.2/24", RoutingDevice{
 			Name: "Router3",
@@ -103,16 +114,15 @@ func TestFindNextHop(t *testing.T) {
 				{Name: "eth0", IP: "192.168.3.1/24"},
 				{Name: "eth1", IP: "192.168.2.2/24"},
 			},
-			Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+			Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 			Default:      "192.168.3.2"}},
-		//FIXME: somehow not correct
 		{"172.16.0.0/24", "192.168.3.2/24", RoutingDevice{
 			Name: "Router3",
 			Interfaces: []Interface{
 				{Name: "eth0", IP: "192.168.3.1/24"},
 				{Name: "eth1", IP: "192.168.2.2/24"},
 			},
-			Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+			Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 			Default:      "192.168.3.2"}},
 		{"10.0.0.0/8", "192.168.5.1/24", RoutingDevice{
 			Name: "MLSwitch2",
@@ -120,7 +130,7 @@ func TestFindNextHop(t *testing.T) {
 				{Name: "eth0", IP: "192.168.5.2/24"},
 				{Name: "eth1", IP: "172.16.0.0/24"},
 			},
-			Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8"},
+			Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8", "192.168.100.0/24"},
 			Default:      ""}},
 		{"172.16.0.0/24", "192.168.5.2/24", RoutingDevice{
 			Name: "MLSwitch1",
@@ -128,8 +138,16 @@ func TestFindNextHop(t *testing.T) {
 				{Name: "eth0", IP: "192.168.5.1/24"},
 				{Name: "eth1", IP: "192.168.4.2/24"},
 			},
-			Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+			Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 			Default:      "192.168.5.2"}},
+		{"192.168.100.0/24", "192.168.3.4/24", RoutingDevice{
+			Name: "Router3",
+			Interfaces: []Interface{
+				{Name: "eth0", IP: "192.168.3.1/24"},
+				{Name: "eth1", IP: "192.168.2.2/24"},
+			},
+			Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
+			Default:      "192.168.3.2"}},
 	}
 
 	for _, test := range tests {

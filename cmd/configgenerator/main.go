@@ -54,7 +54,7 @@ func main() {
 					Name: "Router1",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.1.2",
-						Destinations: []string{"192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "172.16.0.0/24"},
+						Destinations: []string{"192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.1.1/24"},
@@ -65,7 +65,7 @@ func main() {
 					Name: "Router2",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.2.2",
-						Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.3.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.2.1/24"},
@@ -75,8 +75,8 @@ func main() {
 				{
 					Name: "Router3",
 					Routes: importer.RoutesYAML{
-						Default:      "192.168.3.2/24",
-						Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Default:      "192.168.3.2",
+						Destinations: []string{"192.168.1.0/24", "192.168.4.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.3.1/24"},
@@ -87,7 +87,7 @@ func main() {
 					Name: "Router4",
 					Routes: importer.RoutesYAML{
 						Default:      "192.168.4.2",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.4.1/24"},
@@ -99,8 +99,8 @@ func main() {
 				{
 					Name: "MLSwitch1",
 					Routes: importer.RoutesYAML{
-						Default:      "192.168.5.2",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+						Default:      "192.168.5.1",
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "10.0.0.0/8", "172.16.0.0/24", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.4.2/24"},
@@ -111,18 +111,29 @@ func main() {
 					Name: "MLSwitch2",
 					Routes: importer.RoutesYAML{
 						Default:      "",
-						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8"},
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.4.0/24", "10.0.0.0/8", "192.168.100.0/24"},
 					},
 					Interfaces: []importer.InterfaceYAML{
 						{Name: "eth0", IP: "192.168.5.2/24"},
 						{Name: "eth1", IP: "172.16.0.0/24"},
 					},
 				},
+				{
+					Name: "MLSwitch3",
+					Routes: importer.RoutesYAML{
+						Default:      "192.168.4.2",
+						Destinations: []string{"192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24", "192.168.5.0/24", "10.0.0.0/8", "172.16.0.0/24"},
+					},
+					Interfaces: []importer.InterfaceYAML{
+						{Name: "eth0", IP: "192.168.4.3/24"},
+						{Name: "eth1", IP: "192.168.100.0/24"},
+					},
+				},
 			},
 		},
 	}
 
-	dest := "172.16.0.0/24"
+	dest := "192.168.100.0/24"
 	nextHop := devices.FindNextHop(dest, devices.RoutingDevice{
 		Name: "Router3",
 		Interfaces: []devices.Interface{

@@ -67,7 +67,8 @@ func FindNextHop(dest string, routing RoutingDevice, fullNetwork *[]importer.Net
 		for _, device := range routingDevices {
 			if !visited[device.Name] {
 				success = false
-				continue
+				fmt.Println("Not all devices visited")
+				break
 			} else {
 				continue
 			}
@@ -96,6 +97,7 @@ func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []Rout
 				return routing.Default, remember, visited
 			}
 			if check {
+				fmt.Println("Found direct route to", dest, "via", neighborIP, " with success "+fmt.Sprint(remember), " and visited ", visited)
 				return neighborIP, true, visited
 			}
 		}
@@ -106,13 +108,15 @@ func findNextHopRecursive(dest string, routing RoutingDevice, fullNetwork []Rout
 		if !visited[neighborName] {
 			neighborDevice := getRoutingDeviceByName(neighborName, fullNetwork)
 
-			nextHop, remember, _ := findNextHopRecursive(dest, neighborDevice, fullNetwork, visited, remember)
+			nextHop, remember, visited := findNextHopRecursive(dest, neighborDevice, fullNetwork, visited, remember)
 
 			if nextHop != routing.Default {
+				fmt.Println("Found multi-hop route to", dest, "via", neighborIP, " with success "+fmt.Sprint(remember), " and visited ", visited)
 				return neighborIP, remember, visited
 			}
 		}
 	}
+	fmt.Println("No route found to", dest, "via", routing.Default, " with success "+fmt.Sprint(remember), " and visited ", visited)
 	return routing.Default, false, visited
 }
 
