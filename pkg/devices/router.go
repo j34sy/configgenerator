@@ -42,8 +42,9 @@ func CreateRouter(routerYAML importer.RouterYAML, usersYAML []importer.UserYAML,
 	routes := []Route{}
 
 	for _, destination := range destinations {
-		routes = append(routes, Route{destination, ""})
-		FindNextHop(destination, RoutingDevice{routerYAML.Name, interfaces, routerYAML.Routes.Destinations, routerYAML.Routes.Default}, fullNetwork)
+		nextHop := FindNextHop(destination, RoutingDevice{routerYAML.Name, interfaces, routerYAML.Routes.Destinations, routerYAML.Routes.Default}, fullNetwork)
+
+		routes = append(routes, Route{destination, nextHop})
 	}
 
 	return &Router{
