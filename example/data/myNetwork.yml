@@ -72,6 +72,16 @@
           - 192.168.10.0/24
           - 192.168.20.0/24
   switches:
+    - name: accessswitch
+      interfaces:
+        - name: gigabitethernet0/1
+          vlan: trunk
+          trunk:
+            - 101
+            - 102
+          native: 1
+        - name: vlan101
+          ip: 192.168.101.254/24
     - name: myswitch1
       interfaces:
         - name: gigabitethernet0/1
@@ -95,8 +105,8 @@
         - name: fastethernet0/1
           vlan: access
           access: 20
-        - vlan: 10
-          ip: 192.168.10.254
+        - name: vlan10
+          ip: 192.168.10.254/24
   mlswitches:
     - name: mymlswitch
       routing: true
@@ -119,12 +129,12 @@
             - 20
           native: 1
         - name: vlan10
-          ip: 192.168.10.1
+          ip: 192.168.10.1/24
           ospf:
             process: 1
             area: 1
         - name: vlan20
-          ip: 192.168.20.1
+          ip: 192.168.20.1/24
           ospf:
             process: 1
             area: 1
