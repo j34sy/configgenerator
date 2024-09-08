@@ -68,6 +68,7 @@ func TestFindNextHop(t *testing.T) {
 						{Name: "eth0", IP: "192.168.4.2/24"},
 						{Name: "eth1", IP: "192.168.5.1/24"},
 					},
+					Routing: true,
 				},
 				{
 					Name: "MLSwitch2",
@@ -79,6 +80,7 @@ func TestFindNextHop(t *testing.T) {
 						{Name: "eth0", IP: "192.168.5.2/24"},
 						{Name: "eth1", IP: "172.16.0.0/24"},
 					},
+					Routing: true,
 				},
 				{
 					Name: "MLSwitch3",
@@ -90,6 +92,7 @@ func TestFindNextHop(t *testing.T) {
 						{Name: "eth0", IP: "192.168.4.3/24"},
 						{Name: "eth1", IP: "192.168.100.1/24"},
 					},
+					Routing: true,
 				},
 				{
 					Name: "MLSwitch4",
@@ -101,6 +104,7 @@ func TestFindNextHop(t *testing.T) {
 						{Name: "eth0", IP: "192.168.200.1/24"},
 						{Name: "eth1", IP: "192.168.100.2/24"},
 					},
+					Routing: true,
 				},
 			},
 		},

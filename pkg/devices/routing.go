@@ -28,7 +28,9 @@ func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.
 			devices = append(devices, RoutingDevice{Name: router.Name, Interfaces: convertYAMLInterfaceToInterface(router.Interfaces), Destinations: router.Routes.Destinations, Default: router.Routes.Default})
 		}
 		for _, mls := range network.MLSwitches {
-			devices = append(devices, RoutingDevice{Name: mls.Name, Interfaces: convertYAMLInterfaceToInterface(mls.Interfaces), Destinations: mls.Routes.Destinations, Default: mls.Routes.Default})
+			if mls.Routing {
+				devices = append(devices, RoutingDevice{Name: mls.Name, Interfaces: convertYAMLInterfaceToInterface(mls.Interfaces), Destinations: mls.Routes.Destinations, Default: mls.Routes.Default})
+			}
 		}
 	}
 
@@ -50,8 +52,8 @@ func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.
 			fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
 		}
 	}
-
-	return ""
+	fmt.Println("Could not find next hop")
+	return routingDev.Default
 }
 
 func findNextHopRecursive(dest string, routingDev RoutingDevice, devices []RoutingDevice, visited map[string]bool) (string, bool, map[string]bool) {
