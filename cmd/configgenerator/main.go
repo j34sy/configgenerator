@@ -63,6 +63,7 @@ func main() {
 
 	for _, network := range networks {
 		writer.PrintNetwork(network)
+		writer.WriteConfigs(network)
 	}
 
 }

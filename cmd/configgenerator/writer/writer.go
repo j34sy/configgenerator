@@ -2,6 +2,8 @@ package writer
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/j34sy/configgenerator/pkg/devices"
 )
@@ -99,4 +101,37 @@ func PrintNetwork(network Network) {
 
 		fmt.Println("Default Gateway:", mlSwitch.Default)
 	}
+}
+
+func WriteConfigs(network Network) {
+	dirName := "configs_" + network.Name
+
+	if _, err := os.Stat(dirName); os.IsNotExist(err) {
+		err := os.Mkdir(dirName, 0755)
+		if err != nil {
+			fmt.Println("Error creating directory: ", err)
+			return
+		}
+	}
+
+	dirPath, err := filepath.Abs(dirName)
+	if err != nil {
+		fmt.Println("Error getting absolute path: ", err)
+		return
+	}
+
+	for _, router := range network.Routers {
+		writeRouterConfigFile(router, dirPath)
+	}
+
+	for _, switchDev := range network.Switches {
+		WriteSwitchConfigFile(switchDev, dirPath)
+	}
+
+	for _, mlSwitch := range network.MLSwitches {
+		WriteMLSwitchConfigFile(mlSwitch, dirPath)
+	}
+
+	fmt.Println("Configs written to:", dirPath)
+
 }
