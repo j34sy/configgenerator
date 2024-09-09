@@ -141,7 +141,7 @@ func getRoutingDeviceByName(name string, devices []RoutingDevice) RoutingDevice 
 func convertYAMLInterfaceToInterface(yamlInterface []importer.InterfaceYAML) []Interface {
 	interfaces := []Interface{}
 	for _, iface := range yamlInterface {
-		interfaces = append(interfaces, Interface{Name: iface.Name, IP: iface.IP})
+		interfaces = append(interfaces, Interface{Name: iface.Name, IP: iface.IP, IPv6: iface.IPv6, Vlan: iface.Vlan, Trunk: iface.Trunk, Access: iface.Access, Native: iface.Native})
 	}
 	return interfaces
 }

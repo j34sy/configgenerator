@@ -8,7 +8,7 @@ import (
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
 
-func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML, vlanGroupsYAML []importer.VlanGroupYAML, domain string) *Switch {
+func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML, vlanGroupsYAML []importer.VlanGroupYAML, domain string, enableSecret string) *Switch {
 
 	//fmt.Println("Creating switch: ", switchYAML.Name)
 	//fmt.Println("in domain: ", domain)
@@ -37,7 +37,7 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 			ospf = &OSPF{iface.OSPF.Process, iface.OSPF.Area}
 
 		}
-		interfaces = append(interfaces, Interface{iface.Name, iface.Vlan, iface.IP, iface.Trunk, iface.Access, ospf, iface.Native})
+		interfaces = append(interfaces, Interface{iface.Name, iface.Vlan, iface.IP, iface.IPv6, iface.Trunk, iface.Access, ospf, iface.Native})
 	}
 
 	vlanInterfaces := []int{}
@@ -62,6 +62,26 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 		}
 	}
 
+	vlanInterfacesv6 := []int{}
+	defaultGatewayv6 := ""
+
+	for _, iface := range interfaces {
+		for _, vlan := range switchVlans {
+			if isVlanInterface(iface.Name) {
+				vlanID, err := extractVLAN(iface.Name)
+				if err != nil {
+					fmt.Println("Error extracting vlan ID: ", err)
+					continue
+				}
+				if vlan.ID == vlanID {
+					if iface.IPv6 != "" {
+						vlanInterfacesv6 = append(vlanInterfacesv6, vlan.ID)
+					}
+				}
+			}
+		}
+	}
+
 	if len(vlanInterfaces) == 0 {
 		//fmt.Println("No vlan interfaces found for device: ", switchYAML.Name)
 	} else if len(vlanInterfaces) == 1 {
@@ -75,13 +95,25 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 		}
 	}
 
+	if len(vlanInterfacesv6) == 0 {
+		//fmt.Println("No vlan interfaces found for device: ", switchYAML.Name)
+	} else if len(vlanInterfacesv6) == 1 {
+		for _, vlan := range switchVlans {
+			if vlan.ID == vlanInterfacesv6[0] {
+				defaultGatewayv6 = vlan.Gatewayv6
+			}
+		}
+	}
+
 	return &Switch{
-		Name:       switchYAML.Name,
-		Interfaces: interfaces,
-		Vlans:      switchVlans,
-		Users:      users,
-		Default:    defaultGateway,
-		Domain:     domain,
+		Name:         switchYAML.Name,
+		Interfaces:   interfaces,
+		Vlans:        switchVlans,
+		Users:        users,
+		Default:      defaultGateway,
+		Defaultv6:    defaultGatewayv6,
+		Domain:       domain,
+		EnableSecret: enableSecret,
 	}
 }
 

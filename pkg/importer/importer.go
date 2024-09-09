@@ -39,6 +39,9 @@ func PrintFullNetworkInfoByYAML(network *NetworkYAML) error {
 			fmt.Println()
 		}
 	}
+
+	fmt.Println("General enable secret: " + network.EnableSecret)
+
 	fmt.Println(". . . . . . . . . . . . . . . . . . . . . .")
 	fmt.Println()
 

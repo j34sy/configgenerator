@@ -7,10 +7,12 @@ type UserYAML struct {
 }
 
 type VlanYAML struct {
-	ID      int    `yaml:"id"`
-	Name    string `yaml:"name"`
-	Subnet  string `yaml:"subnet,omitempty"`
-	Gateway string `yaml:"gateway,omitempty"`
+	ID        int    `yaml:"id"`
+	Name      string `yaml:"name"`
+	Subnet    string `yaml:"subnet,omitempty"`
+	Gateway   string `yaml:"gateway,omitempty"`
+	Subnetv6  string `yaml:"subnetv6,omitempty"`
+	Gatewayv6 string `yaml:"gatewayv6,omitempty"`
 }
 
 type VlanGroupYAML struct {
@@ -35,8 +37,10 @@ type OSPFYAML struct {
 }
 
 type RoutesYAML struct {
-	Destinations []string `yaml:"destinations,omitempty"`
-	Default      string   `yaml:"default,omitempty"`
+	Destinations   []string `yaml:"destinations,omitempty"`
+	Default        string   `yaml:"default,omitempty"`
+	Destinationsv6 []string `yaml:"destinationsv6,omitempty"`
+	Defaultv6      string   `yaml:"defaultv6,omitempty"`
 }
 
 type OSPFRouterYAML struct {
@@ -65,10 +69,11 @@ type MLSwitchYAML struct {
 }
 
 type NetworkYAML struct {
-	Name       string          `yaml:"name"`
-	Users      []UserYAML      `yaml:"users,omitempty"`
-	Vlans      []VlanGroupYAML `yaml:"vlans,omitempty"`
-	Routers    []RouterYAML    `yaml:"routers,omitempty"`
-	Switches   []SwitchYAML    `yaml:"switches,omitempty"`
-	MLSwitches []MLSwitchYAML  `yaml:"mlswitches,omitempty"`
+	Name         string          `yaml:"name"`
+	EnableSecret string          `yaml:"enable,omitempty"`
+	Users        []UserYAML      `yaml:"users,omitempty"`
+	Vlans        []VlanGroupYAML `yaml:"vlans,omitempty"`
+	Routers      []RouterYAML    `yaml:"routers,omitempty"`
+	Switches     []SwitchYAML    `yaml:"switches,omitempty"`
+	MLSwitches   []MLSwitchYAML  `yaml:"mlswitches,omitempty"`
 }

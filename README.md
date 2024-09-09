@@ -1,5 +1,7 @@
 # Small command-line tool to generate CISCO Router and Switch configs from a network YAML file
 
+## DUE TO OTHER PROJECT CURRENTLY BEING ON BREAK, FOR IPV6 ONLY /64 SUBNETS ARE ALLOWED
+
 ## Idea
 - Command-line tool to generate configs
     - Hostname

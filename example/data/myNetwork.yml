@@ -1,5 +1,6 @@
 ---
 - name: mynetwork.internal
+  enable: password123
   users:
     - name: admin
       password: admin123
@@ -11,11 +12,15 @@
       - name: myvlan
         id: 101
         subnet: 192.168.101.0/24
+        subnetv6: 2001:db8:101::/64
         gateway: 192.168.101.1
+        gatewayv6: 2001:db8:101::1
       - name: myvlan2
         id: 102
         subnet: 192.168.102.0/24
+        subnetv6: 2001:db8:102::/64
         gateway: 192.168.102.1
+        gatewayv6: 2001:db8:102::1
     - switches:
         - mymlswitch
         - myswitch1
@@ -24,26 +29,34 @@
         - name: vlan10
           id: 10
           subnet: 192.168.10.0/24
+          subnetv6: 2001:db8:10::/64
           gateway: 192.168.10.1
+          gatewayv6: 2001:db8:10::1
         - name: vlan20
           id: 20
           subnet: 192.168.20.0/24
+          subnetv6: 2001:db8:20::/64
           gateway: 192.168.20.1
+          gatewayv6: 2001:db8:20::1
   routers:
     - name: myrouter
       interfaces:
         - name: gigabitethernet0/0/0
           vlan: 101
           ip: 192.168.101.1/24
+          ipv6: 2001:db8:101::1/64
           native: 1
         - name: gigabitethernet0/0/0
           vlan: 102
           ip: 192.168.102.1/24
+          ipv6: 2001:db8:102::1/64
           native: 1
         - name: gigabitethernet0/0/1
           ip: 10.10.1.2/30
+          ipv6: 2001:db8:10:1::2/64
       routes:
         default: 10.10.1.1
+        defaultv6: 2001:db8:10:1::1
     - name: myrouter2
       ospf:
         - process: 1
@@ -51,11 +64,13 @@
       interfaces:
         - name: gigabitethernet0/0/0
           ip: 10.0.1.1/24
+          ipv6: 2001:db8:1::1/64
           ospf:
             process: 1
             area: 0
         - name: gigabitethernet0/0/1
           ip: 10.10.2.2/30
+          ipv6: 2001:db8:10:2::2/64
       routes:
         destinations:
         default: 10.10.2.1
@@ -63,14 +78,21 @@
       interfaces:
         - name: gigabitethernet0/0/0
           ip: 10.10.1.1/30
+          ipv6: 2001:db8:10:1::1/64
         - name: gigabitethernet0/0/1
           ip: 10.10.2.1/30
+          ipv6: 2001:db8:10:2::1/64
       routes:
         destinations:
           - 192.168.101.0/24
           - 192.168.102.0/24
           - 192.168.10.0/24
           - 192.168.20.0/24
+        destinationsv6:
+          - 2001:db8:101::/64
+          - 2001:db8:102::/64
+          - 2001:db8:10::/64
+          - 2001:db8:20::/64
   switches:
     - name: accessswitch
       interfaces:
@@ -82,6 +104,7 @@
           native: 1
         - name: vlan101
           ip: 192.168.101.254/24
+          ipv6: 2001:db8:101::254/64
     - name: myswitch1
       interfaces:
         - name: gigabitethernet0/1
@@ -107,6 +130,7 @@
           access: 20
         - name: vlan10
           ip: 192.168.10.254/24
+          ipv6: 2001:db8:10::254/64
   mlswitches:
     - name: mymlswitch
       routing: true
@@ -116,6 +140,7 @@
       interfaces:
         - name: gigabitethernet1/0/1
           ip: 10.0.1.254/24
+          ipv6: 2001:db8:1::254/64
         - name: gigabitethernet1/0/23
           vlan: trunk
           trunk:
@@ -130,13 +155,16 @@
           native: 1
         - name: vlan10
           ip: 192.168.10.1/24
+          ipv6: 2001:db8:10::1/64
           ospf:
             process: 1
             area: 1
         - name: vlan20
           ip: 192.168.20.1/24
+          ipv6: 2001:db8:20::1/64
           ospf:
             process: 1
             area: 1
       routes:
         default: 10.0.1.1
+        defaultv6: 2001:db8:1::1

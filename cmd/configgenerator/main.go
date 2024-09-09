@@ -39,15 +39,15 @@ func main() {
 		mlSwitches := []*devices.MLSwitch{}
 
 		for _, routerYAML := range network.Routers {
-			routers = append(routers, devices.CreateRouter(routerYAML, network.Users, network.Name, networksYAML))
+			routers = append(routers, devices.CreateRouter(routerYAML, network.Users, network.Name, network.EnableSecret, networksYAML))
 		}
 
 		for _, switchYAML := range network.Switches {
-			switches = append(switches, devices.CreateSwitch(switchYAML, network.Users, network.Vlans, network.Name))
+			switches = append(switches, devices.CreateSwitch(switchYAML, network.Users, network.Vlans, network.Name, network.EnableSecret))
 		}
 
 		for _, mlSwitchYAML := range network.MLSwitches {
-			mlSwitches = append(mlSwitches, devices.CreateMLSwitch(mlSwitchYAML, network.Users, networksYAML, network.Name, network.Vlans))
+			mlSwitches = append(mlSwitches, devices.CreateMLSwitch(mlSwitchYAML, network.Users, networksYAML, network.Name, network.EnableSecret, network.Vlans))
 		}
 
 		networkData := writer.Network{

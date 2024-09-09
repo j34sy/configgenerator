@@ -1,6 +1,7 @@
 package datahandling
 
 import (
+	"net"
 	"strconv"
 	"strings"
 
@@ -78,4 +79,21 @@ func IsSameNetwork(ipv4AString string, ipv4BString string) (bool, error) {
 	}
 
 	return result, nil
+}
+
+func IsSameNetworkv6(ipv6A string, ipv6B string) (bool, error) {
+	v6A, _, err1 := net.ParseCIDR(ipv6A)
+	v6B, _, err2 := net.ParseCIDR(ipv6B)
+
+	if err1 != nil {
+		return false, err1
+	}
+	if err2 != nil {
+		return false, err2
+	}
+
+	subnetA := v6A.Mask(net.CIDRMask(64, 128))
+	subnetB := v6B.Mask(net.CIDRMask(64, 128))
+
+	return subnetA.Equal(subnetB), nil
 }
