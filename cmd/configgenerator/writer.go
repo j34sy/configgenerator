@@ -10,10 +10,11 @@ type Network struct {
 	Routers    []*devices.Router
 	Switches   []*devices.Switch
 	MLSwitches []*devices.MLSwitch
+	Name       string
 }
 
 func PrintNetwork(network Network) {
-	fmt.Println("Network:")
+	fmt.Println("Network:", network.Name)
 
 	fmt.Println("Switches:")
 	for _, switchDev := range network.Switches {

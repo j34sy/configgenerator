@@ -53,6 +53,7 @@ func main() {
 			Routers:    routers,
 			Switches:   switches,
 			MLSwitches: mlSwitches,
+			Name:       network.Name,
 		}
 
 		networks = append(networks, networkData)
@@ -60,7 +61,6 @@ func main() {
 	}
 
 	for _, network := range networks {
-		fmt.Println("Network: ", network.Routers[0].Domain)
 		PrintNetwork(network)
 	}
 

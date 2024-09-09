@@ -22,6 +22,7 @@ type InterfaceYAML struct {
 	Name   string    `yaml:"name"`
 	Vlan   string    `yaml:"vlan,omitempty"`
 	IP     string    `yaml:"ip,omitempty"`
+	IPv6   string    `yaml:"ipv6,omitempty"`
 	Trunk  []int     `yaml:"trunk,omitempty"`
 	Access int       `yaml:"access,omitempty"`
 	OSPF   *OSPFYAML `yaml:"ospf,omitempty"`

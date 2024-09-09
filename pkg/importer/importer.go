@@ -31,59 +31,80 @@ func PrintFullNetworkInfoByYAML(network *NetworkYAML) error {
 
 	fmt.Println()
 	fmt.Println("Users:")
-	for _, user := range network.Users {
-		fmt.Println("User: " + user.Name)
-		fmt.Println("Privilege: " + user.Privilege)
-		fmt.Println("Password: " + user.Password)
-		fmt.Println()
+	if network.Users != nil {
+		for _, user := range network.Users {
+			fmt.Println("User: " + user.Name)
+			fmt.Println("Privilege: " + user.Privilege)
+			fmt.Println("Password: " + user.Password)
+			fmt.Println()
+		}
 	}
 	fmt.Println(". . . . . . . . . . . . . . . . . . . . . .")
 	fmt.Println()
 
 	fmt.Println("Vlans:")
-	for _, vlangroup := range network.Vlans {
-		fmt.Println("Switches for this VLAN set:")
-		for _, switchName := range vlangroup.Switches {
-			fmt.Println("Switch: " + switchName)
+	if network.Vlans != nil {
+		for _, vlangroup := range network.Vlans {
+			fmt.Println("Switches for this VLAN set:")
+			for _, switchName := range vlangroup.Switches {
+				fmt.Println("Switch: " + switchName)
+			}
+			fmt.Println("VLANs:")
+			if vlangroup.List != nil {
+				for _, vlan := range vlangroup.List {
+					fmt.Println("ID: ", vlan.ID)
+					fmt.Println("Name: " + vlan.Name)
+					fmt.Println("Subnet: " + vlan.Subnet)
+					fmt.Println("Gateway: " + vlan.Gateway)
+					fmt.Println()
+				}
+			}
+			fmt.Println("---")
 		}
-		fmt.Println("VLANs:")
-		for _, vlan := range vlangroup.List {
-			fmt.Println("ID: ", vlan.ID)
-			fmt.Println("Name: " + vlan.Name)
-			fmt.Println("Subnet: " + vlan.Subnet)
-			fmt.Println("Gateway: " + vlan.Gateway)
-			fmt.Println()
-		}
-		fmt.Println("---")
 	}
 
 	fmt.Println(". . . . . . . . . . . . . . . . . . . . . .")
 	fmt.Println()
 
 	fmt.Println("Switches:")
-	for _, switchDev := range network.Switches {
-		fmt.Println("Switch: " + switchDev.Name)
+	if network.Switches != nil {
+		for _, switchDev := range network.Switches {
+			fmt.Println("Switch: " + switchDev.Name)
 
-		PrintInterfaces(switchDev.Interfaces)
+			if switchDev.Interfaces != nil {
 
-		fmt.Println("---")
+				PrintInterfaces(switchDev.Interfaces)
+			}
+
+			fmt.Println("---")
+		}
 	}
 
 	fmt.Println(". . . . . . . . . . . . . . . . . . . . . .")
 	fmt.Println()
 
 	fmt.Println("Multi-Layer Switches:")
-	for _, mlswitch := range network.MLSwitches {
-		fmt.Println("Switch: " + mlswitch.Name)
-		fmt.Println("Routing: ", mlswitch.Routing)
+	if network.MLSwitches != nil {
 
-		PrintInterfaces(mlswitch.Interfaces)
+		for _, mlswitch := range network.MLSwitches {
+			fmt.Println("Switch: " + mlswitch.Name)
+			fmt.Println("Routing: ", mlswitch.Routing)
 
-		PrintRoutes(mlswitch.Routes)
+			if mlswitch.Interfaces != nil {
 
-		PrintOSPFRouter(mlswitch.OSPFRouter)
+				PrintInterfaces(mlswitch.Interfaces)
+			}
 
-		fmt.Println("---")
+			PrintRoutes(mlswitch.Routes)
+
+			if mlswitch.OSPFRouter != nil {
+
+				PrintOSPFRouter(mlswitch.OSPFRouter)
+			}
+
+			fmt.Println("---")
+
+		}
 	}
 
 	fmt.Println(". . . . . . . . . . . . . . . . . . . . . .")
@@ -93,9 +114,15 @@ func PrintFullNetworkInfoByYAML(network *NetworkYAML) error {
 	for _, router := range network.Routers {
 		fmt.Println("Router: " + router.Name)
 
-		PrintOSPFRouter(router.OSPFRouter)
+		if router.OSPFRouter != nil {
+			PrintOSPFRouter(router.OSPFRouter)
+		}
 
-		PrintInterfaces(router.Interfaces)
+		if router.Interfaces != nil {
+
+			PrintInterfaces(router.Interfaces)
+
+		}
 
 		PrintRoutes(router.Routes)
 
@@ -110,8 +137,10 @@ func PrintFullNetworkInfoByYAML(network *NetworkYAML) error {
 func PrintRoutes(routes RoutesYAML) {
 	fmt.Println("Routes:")
 	fmt.Println("Destinations:")
-	for _, dest := range routes.Destinations {
-		fmt.Println(dest)
+	if routes.Destinations != nil {
+		for _, dest := range routes.Destinations {
+			fmt.Println(dest)
+		}
 	}
 	fmt.Println("Default: " + routes.Default)
 	fmt.Println()
