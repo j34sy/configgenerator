@@ -2,6 +2,8 @@ package devices
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
@@ -43,11 +45,18 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 
 	for _, iface := range interfaces {
 		for _, vlan := range switchVlans {
-			if iface.Vlan == fmt.Sprint(vlan.ID) {
-				fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", switchYAML.Name)
-				if iface.IP != "" {
-					fmt.Println("Found IP info in interface: ", iface.Name, " device: ", switchYAML.Name)
-					vlanInterfaces = append(vlanInterfaces, vlan.ID)
+			if isVlanInterface(iface.Name) {
+				vlanID, err := extractVLAN(iface.Name)
+				if err != nil {
+					fmt.Println("Error extracting vlan ID: ", err)
+					continue
+				}
+				if vlan.ID == vlanID {
+					fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", switchYAML.Name)
+					if iface.IP != "" {
+						fmt.Println("Found IP info in interface: ", iface.Name, " device: ", switchYAML.Name)
+						vlanInterfaces = append(vlanInterfaces, vlan.ID)
+					}
 				}
 			}
 		}
@@ -74,4 +83,18 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 		Default:    defaultGateway,
 		Domain:     domain,
 	}
+}
+
+func isVlanInterface(s string) bool {
+	re := regexp.MustCompile(`^vlan\d{1,4}$`)
+	return re.MatchString(s)
+}
+
+func extractVLAN(s string) (int, error) {
+	re := regexp.MustCompile(`^vlan(\d{1,4})$`)
+	matches := re.FindStringSubmatch(s)
+	if len(matches) == 2 {
+		return strconv.Atoi(matches[1])
+	}
+	return 0, fmt.Errorf("invalid VLAN string")
 }
