@@ -11,6 +11,11 @@ func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.
 	visited := make(map[string]bool)
 
 	for _, iface := range routingDev.Interfaces {
+
+		if iface.IP == "" {
+			continue
+		}
+		//fmt.Println("Requesting IP adresses for dev ", routingDev.Name, " with IPs ", dest, iface.IP)
 		match, err := datahandling.IsSameNetwork(dest, iface.IP)
 		if err != nil {
 			fmt.Println(err)
@@ -41,32 +46,36 @@ func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.
 		}
 	}
 
-	for neighbor, ip := range GetDirectNeighbors(routingDev, devices) {
-		nextHop, found, visited := findNextHopRecursive(dest, routingDev, devices, visited)
+	for i := 0; i < len(GetDirectNeighbors(routingDev, devices)); i++ {
+		nextHop, found, _ := findNextHopRecursive(dest, routingDev, devices, visited)
 
 		if found {
-			fmt.Println("Found next hop: ", nextHop, " for ", dest, " should be ", ip, " on ", neighbor)
+			//fmt.Println("Found next hop: ", nextHop, " for ", dest, " should be ", ip, " on ", neighbor)
 			return nextHop
 		} else {
-			fmt.Println("Could not find next hop")
-			fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
+			//fmt.Println("Could not find next hop")
+			//fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
 		}
 	}
-	fmt.Println("Could not find next hop")
+	//fmt.Println("Could not find next hop")
 	return routingDev.Default
 }
 
 func findNextHopRecursive(dest string, routingDev RoutingDevice, devices []RoutingDevice, visited map[string]bool) (string, bool, map[string]bool) {
-	fmt.Println("Visiting device: ", routingDev.Name)
+	//fmt.Println("Visiting device: ", routingDev.Name)
 
 	for _, iface := range routingDev.Interfaces {
+		if iface.IP == "" {
+			continue
+		}
+		//fmt.Println("Requesting IP adresses for dev ", routingDev.Name, " with IPs ", dest, iface.IP)
 		match, err := datahandling.IsSameNetwork(dest, iface.IP)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 		if match {
-			fmt.Println("Match found on interface: ", iface.IP)
+			//fmt.Println("Match found on interface: ", iface.IP)
 			return iface.IP, true, visited
 		}
 	}
@@ -75,7 +84,7 @@ func findNextHopRecursive(dest string, routingDev RoutingDevice, devices []Routi
 
 	for neighbor, ip := range neighbors {
 		if visited[neighbor] {
-			fmt.Println("Already visited: ", neighbor)
+			//fmt.Println("Already visited: ", neighbor)
 			continue
 		}
 		visited[neighbor] = true
@@ -85,7 +94,7 @@ func findNextHopRecursive(dest string, routingDev RoutingDevice, devices []Routi
 		_, found, visited := findNextHopRecursive(dest, neighborDev, devices, visited)
 
 		if found {
-			fmt.Println("Next hop found via neighbor: ", neighbor, " with IP: ", ip)
+			//fmt.Println("Next hop found via neighbor: ", neighbor, " with IP: ", ip)
 			return ip, true, visited
 		}
 	}
@@ -102,13 +111,16 @@ func GetDirectNeighbors(routing RoutingDevice, fullNetwork []RoutingDevice) map[
 		}
 		for _, iface := range device.Interfaces {
 			for _, routerIface := range routing.Interfaces {
-				check, err := datahandling.IsSameNetwork(routerIface.IP, iface.IP)
-				if err != nil {
-					fmt.Println(err)
-					continue
-				}
-				if check {
-					neighbors[device.Name] = iface.IP
+				if routerIface.IP != "" && iface.IP != "" {
+					//fmt.Println("Requesting IP adresses for neighbor checking ", device.Name, " with IPs ", routerIface, iface.IP)
+					check, err := datahandling.IsSameNetwork(routerIface.IP, iface.IP)
+					if err != nil {
+						fmt.Println(err)
+						continue
+					}
+					if check {
+						neighbors[device.Name] = iface.IP
+					}
 				}
 			}
 		}

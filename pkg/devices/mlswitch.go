@@ -8,8 +8,8 @@ import (
 
 func CreateMLSwitch(mlSwitchYAML importer.MLSwitchYAML, usersYAML []importer.UserYAML, fullNetwork *[]importer.NetworkYAML, domain string, vlanGroupsYAML []importer.VlanGroupYAML) *MLSwitch {
 
-	fmt.Println("Creating MLSwitch: ", mlSwitchYAML.Name)
-	fmt.Println("in domain: ", domain)
+	//fmt.Println("Creating MLSwitch: ", mlSwitchYAML.Name)
+	//fmt.Println("in domain: ", domain)
 
 	interfaces := []Interface{}
 
@@ -17,7 +17,7 @@ func CreateMLSwitch(mlSwitchYAML importer.MLSwitchYAML, usersYAML []importer.Use
 		var ospf *OSPF
 		if iface.OSPF != nil {
 			ospf = &OSPF{iface.OSPF.Process, iface.OSPF.Area}
-			fmt.Println("Found ospf info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
+			//fmt.Println("Found ospf info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
 		}
 		interfaces = append(interfaces, Interface{iface.Name, iface.Vlan, iface.IP, iface.Trunk, iface.Access, ospf, iface.Native})
 	}
@@ -51,17 +51,17 @@ func CreateMLSwitch(mlSwitchYAML importer.MLSwitchYAML, usersYAML []importer.Use
 	}
 
 	if !mlSwitchYAML.Routing && mlSwitchYAML.Routes.Default == "" {
-		fmt.Println("No routing enabled for device: ", mlSwitchYAML.Name)
-		fmt.Println("Looking for default gateway in vlan interfaces")
+		//fmt.Println("No routing enabled for device: ", mlSwitchYAML.Name)
+		//fmt.Println("Looking for default gateway in vlan interfaces")
 		vlanInterfaces := []int{}
 		defaultGateway := ""
 
 		for _, iface := range interfaces {
 			for _, vlan := range switchVlans {
 				if iface.Vlan == fmt.Sprint(vlan.ID) {
-					fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
+					//fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
 					if iface.IP != "" {
-						fmt.Println("Found IP info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
+						//fmt.Println("Found IP info in interface: ", iface.Name, " device: ", mlSwitchYAML.Name)
 						vlanInterfaces = append(vlanInterfaces, vlan.ID)
 					}
 				}
@@ -69,14 +69,15 @@ func CreateMLSwitch(mlSwitchYAML importer.MLSwitchYAML, usersYAML []importer.Use
 		}
 
 		if len(vlanInterfaces) == 0 {
-			fmt.Println("No vlan interfaces found for device: ", mlSwitchYAML.Name)
+			//fmt.Println("No vlan interfaces found for device: ", mlSwitchYAML.Name)
 		} else if len(vlanInterfaces) == 1 {
-			fmt.Println("Found one vlan interface for device: ", mlSwitchYAML.Name)
-			fmt.Println("Vlan interface: ", vlanInterfaces[0])
+			//fmt.Println("Found one vlan interface for device: ", mlSwitchYAML.Name)
+			//fmt.Println("Vlan interface: ", vlanInterfaces[0])
 			for _, vlan := range switchVlans {
 				if vlan.ID == vlanInterfaces[0] {
 					defaultGateway = vlan.Gateway
-					fmt.Println("Default gateway: ", defaultGateway)
+					mlSwitchYAML.Routes.Default = defaultGateway
+					//fmt.Println("Default gateway: ", defaultGateway)
 				}
 			}
 		}

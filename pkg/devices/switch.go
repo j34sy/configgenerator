@@ -10,8 +10,8 @@ import (
 
 func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML, vlanGroupsYAML []importer.VlanGroupYAML, domain string) *Switch {
 
-	fmt.Println("Creating switch: ", switchYAML.Name)
-	fmt.Println("in domain: ", domain)
+	//fmt.Println("Creating switch: ", switchYAML.Name)
+	//fmt.Println("in domain: ", domain)
 
 	switchVlans := []Vlan{}
 	for _, vlanGroup := range vlanGroupsYAML {
@@ -33,7 +33,7 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 	for _, iface := range switchYAML.Interfaces {
 		var ospf *OSPF
 		if iface.OSPF != nil {
-			fmt.Println("Found ospf info in interface: ", iface.Name, " device: ", switchYAML.Name)
+			//fmt.Println("Found ospf info in interface: ", iface.Name, " device: ", switchYAML.Name)
 			ospf = &OSPF{iface.OSPF.Process, iface.OSPF.Area}
 
 		}
@@ -52,9 +52,9 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 					continue
 				}
 				if vlan.ID == vlanID {
-					fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", switchYAML.Name)
+					//fmt.Println("Found vlan info in interface: ", iface.Name, " device: ", switchYAML.Name)
 					if iface.IP != "" {
-						fmt.Println("Found IP info in interface: ", iface.Name, " device: ", switchYAML.Name)
+						//fmt.Println("Found IP info in interface: ", iface.Name, " device: ", switchYAML.Name)
 						vlanInterfaces = append(vlanInterfaces, vlan.ID)
 					}
 				}
@@ -63,14 +63,14 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 	}
 
 	if len(vlanInterfaces) == 0 {
-		fmt.Println("No vlan interfaces found for device: ", switchYAML.Name)
+		//fmt.Println("No vlan interfaces found for device: ", switchYAML.Name)
 	} else if len(vlanInterfaces) == 1 {
-		fmt.Println("Found one vlan interface for device: ", switchYAML.Name)
-		fmt.Println("Vlan interface: ", vlanInterfaces[0])
+		//fmt.Println("Found one vlan interface for device: ", switchYAML.Name)
+		//fmt.Println("Vlan interface: ", vlanInterfaces[0])
 		for _, vlan := range switchVlans {
 			if vlan.ID == vlanInterfaces[0] {
 				defaultGateway = vlan.Gateway
-				fmt.Println("Default gateway: ", defaultGateway)
+				//fmt.Println("Default gateway: ", defaultGateway)
 			}
 		}
 	}
