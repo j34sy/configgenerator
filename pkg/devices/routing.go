@@ -52,10 +52,10 @@ func FindNextHop(dest string, routingDev RoutingDevice, fullNetwork *[]importer.
 		if found {
 			//fmt.Println("Found next hop: ", nextHop, " for ", dest, " should be ", ip, " on ", neighbor)
 			return nextHop
-		} else {
-			//fmt.Println("Could not find next hop")
-			//fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
-		}
+		} // else {}
+		//fmt.Println("Could not find next hop")
+		//fmt.Println("Tried to find next hop for ", dest, " on ", routingDev.Name, " with visited: ", visited)
+		// }
 	}
 	//fmt.Println("Could not find next hop")
 	return routingDev.Default
