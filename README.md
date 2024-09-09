@@ -27,6 +27,6 @@
 
 
 - Missing Features
-    - IPv6 support
-    - Enable secret
+    - Spanning-tree for Layer2 devices
+    - IPv6 link-local
 

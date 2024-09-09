@@ -29,5 +29,29 @@ func WriteSwitchConfigFile(switchDev *devices.Switch, dirPath string) {
 
 	file.WriteString("hostname " + switchDev.Name + "\n")
 	file.WriteString("ip domain-name " + switchDev.Domain + "\n")
+	file.WriteString("enable secret " + switchDev.EnableSecret + "\n")
+	writeUsers(file, switchDev.Users)
+	file.WriteString("line console 0\n")
+	file.WriteString("logging synchronous\n")
+	if len(switchDev.Users) > 0 {
+		file.WriteString("login local\n")
+	}
+
+	writeVlans(file, switchDev.Vlans)
+
+	for _, iface := range switchDev.Interfaces {
+		writeInterfaceLayer2(file, iface)
+	}
+
+	if switchDev.Default != "" {
+		file.WriteString("ip default-gateway " + splitIP(switchDev.Default) + "\n")
+	}
+
+	if switchDev.Defaultv6 != "" {
+		// FIXME: Find correct way of setting default gw for ipv6
+		// folowing docs
+		// file.WriteString("ipv6 default-gateway " + switchDev.Defaultv6 + "\n")
+		file.WriteString("ipv6 route ::/0 " + splitIP(switchDev.Defaultv6) + "\n")
+	}
 
 }

@@ -45,8 +45,8 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 
 	for _, iface := range interfaces {
 		for _, vlan := range switchVlans {
-			if isVlanInterface(iface.Name) {
-				vlanID, err := extractVLAN(iface.Name)
+			if IsVlanInterface(iface.Name) {
+				vlanID, err := ExtractVLAN(iface.Name)
 				if err != nil {
 					fmt.Println("Error extracting vlan ID: ", err)
 					continue
@@ -67,8 +67,8 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 
 	for _, iface := range interfaces {
 		for _, vlan := range switchVlans {
-			if isVlanInterface(iface.Name) {
-				vlanID, err := extractVLAN(iface.Name)
+			if IsVlanInterface(iface.Name) {
+				vlanID, err := ExtractVLAN(iface.Name)
 				if err != nil {
 					fmt.Println("Error extracting vlan ID: ", err)
 					continue
@@ -117,12 +117,12 @@ func CreateSwitch(switchYAML importer.SwitchYAML, usersYAML []importer.UserYAML,
 	}
 }
 
-func isVlanInterface(s string) bool {
+func IsVlanInterface(s string) bool {
 	re := regexp.MustCompile(`^vlan\d{1,4}$`)
 	return re.MatchString(s)
 }
 
-func extractVLAN(s string) (int, error) {
+func ExtractVLAN(s string) (int, error) {
 	re := regexp.MustCompile(`^vlan(\d{1,4})$`)
 	matches := re.FindStringSubmatch(s)
 	if len(matches) == 2 {
