@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/j34sy/configgenerator/cmd/configgenerator/writer"
 	"github.com/j34sy/configgenerator/pkg/devices"
 	"github.com/j34sy/configgenerator/pkg/importer"
 )
@@ -29,7 +30,7 @@ func main() {
 		return
 	}
 
-	networks := []Network{}
+	networks := []writer.Network{}
 
 	for _, network := range *networksYAML {
 
@@ -49,7 +50,7 @@ func main() {
 			mlSwitches = append(mlSwitches, devices.CreateMLSwitch(mlSwitchYAML, network.Users, networksYAML, network.Name, network.Vlans))
 		}
 
-		networkData := Network{
+		networkData := writer.Network{
 			Routers:    routers,
 			Switches:   switches,
 			MLSwitches: mlSwitches,
@@ -61,7 +62,7 @@ func main() {
 	}
 
 	for _, network := range networks {
-		PrintNetwork(network)
+		writer.PrintNetwork(network)
 	}
 
 }
