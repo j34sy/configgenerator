@@ -37,6 +37,8 @@ func WriteSwitchConfigFile(switchDev *devices.Switch, dirPath string) {
 		file.WriteString("login local\n")
 	}
 
+	file.WriteString("no ip domain-lookup\n")
+
 	writeVlans(file, switchDev.Vlans)
 
 	for _, iface := range switchDev.Interfaces {
@@ -54,4 +56,5 @@ func WriteSwitchConfigFile(switchDev *devices.Switch, dirPath string) {
 		file.WriteString("ipv6 route ::/0 " + splitIP(switchDev.Defaultv6) + "\n")
 	}
 
+	writeSSH(file)
 }
