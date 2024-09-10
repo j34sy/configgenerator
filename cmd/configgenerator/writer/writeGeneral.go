@@ -119,3 +119,21 @@ func writeSSH(file *os.File) {
 	file.WriteString("login local\n")
 	file.WriteString("exit\n")
 }
+
+func writeRoutesv4(file *os.File, routes []devices.Route) {
+	for _, route := range routes {
+		ipv4, err := datahandling.GetIPv4Address(route.Destination)
+		if err != nil {
+			fmt.Println("Error getting IPv4 address: ", err)
+			return
+		}
+
+		file.WriteString("ip route " + ipv4.GetNetworkAddress() + " " + ipv4.GetSubnetMask() + " " + route.NextHop + "\n")
+	}
+}
+
+func writeRoutesv6(file *os.File, routes []devices.Routev6) {
+	for _, route := range routes {
+		file.WriteString("ipv6 route " + route.Destination + " " + strings.Split(route.NextHop, "/")[0] + "\n")
+	}
+}
