@@ -46,6 +46,10 @@ func writeRouterConfigFile(router *devices.Router, dirPath string) {
 		file.WriteString("router-id " + ospfRouter.ID + "\n")
 		// TODO: Not adding ospf info on interface but here..., needs data remodeling
 		file.WriteString("exit\n")
+		file.WriteString("ipv6 router ospf " + strconv.Itoa(ospfRouter.Process) + "\n")
+		file.WriteString("router-id " + ospfRouter.ID + "\n")
+		// TODO: Not adding ospf info on interface but here..., needs data remodeling
+		file.WriteString("exit\n")
 	}
 
 	subifaces := []string{}
@@ -84,7 +88,7 @@ func writeRouterConfigFile(router *devices.Router, dirPath string) {
 	writeRoutesv6(file, router.Routesv6)
 
 	if router.Default != "" {
-		file.WriteString("ip route 0.0.0.0/0 " + strings.Split(router.Default, "/")[0] + "\n")
+		file.WriteString("ip route 0.0.0.0 0.0.0.0 " + strings.Split(router.Default, "/")[0] + "\n")
 	}
 
 	if router.Defaultv6 != "" {
