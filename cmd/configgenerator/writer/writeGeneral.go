@@ -18,6 +18,7 @@ func writeInterfaceLayer2(file *os.File, iface devices.Interface) {
 	} else if iface.Vlan == "trunk" {
 		file.WriteString("switchport mode trunk\n")
 		file.WriteString("switchport trunk native vlan " + strconv.Itoa(iface.Native) + "\n")
+		file.WriteString("switchport trunk allowed vlan " + strconv.Itoa(iface.Native) + "\n")
 		for _, trunk := range iface.Trunk {
 			file.WriteString("switchport trunk allowed vlan add " + strconv.Itoa(trunk) + "\n")
 		}
@@ -58,10 +59,8 @@ func splitIP(ipWithCIDR string) string {
 	return ip
 }
 
-func writeInterfaceLayer3(file *os.File, iface devices.Interface) {
-	file.WriteString("interface " + iface.Name + "\n")
-
-	// FIXME: Subinterfaces..
+func writeInterfaceLayer3(file *os.File, iface devices.Interface, interfaceName string) {
+	file.WriteString("interface " + interfaceName + "\n")
 
 	if iface.IP != "" {
 		devIP, err := datahandling.GetIPv4Address(iface.IP)
@@ -81,6 +80,20 @@ func writeInterfaceLayer3(file *os.File, iface devices.Interface) {
 	}
 
 	file.WriteString("no shutdown\n")
+
+	if iface.OSPF != nil {
+		file.WriteString("ospf " + strconv.Itoa(iface.OSPF.Process) + " area " + strconv.Itoa(iface.OSPF.Area) + "\n")
+	}
+
+	if iface.Name != interfaceName && strings.Contains(interfaceName, ".") {
+		if iface.Vlan == strconv.Itoa(iface.Native) {
+			file.WriteString("encapsulation dot1Q " + iface.Vlan + " native \n")
+		} else {
+			file.WriteString("encapsulation dot1Q " + iface.Vlan + "\n")
+
+		}
+	}
+
 	file.WriteString("exit\n")
 }
 
@@ -96,4 +109,13 @@ func writeUsers(file *os.File, users []devices.User) {
 	for _, user := range users {
 		file.WriteString("username " + user.Name + " privilege " + user.Privilege + " secret " + user.Password + "\n")
 	}
+}
+
+func writeSSH(file *os.File) {
+	file.WriteString("crypto key generate rsa general-keys modulus 4096\n")
+	file.WriteString("ip ssh version 2\n")
+	file.WriteString("line vty 0 4\n")
+	file.WriteString("transport input ssh\n")
+	file.WriteString("login local\n")
+	file.WriteString("exit\n")
 }
