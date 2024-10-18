@@ -29,4 +29,5 @@
 - Missing Features
     - Spanning-tree for Layer2 devices
     - IPv6 link-local
+    - OSPF: IPv4 networks in router-ospf config
 

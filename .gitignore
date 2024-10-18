@@ -26,3 +26,7 @@ go.work.sum
 
 # Ignore any generated configs
 configs_*
+
+
+# Ignore all packet tracer files (for debugging and testing)
+config-generator-test-network.pkt
